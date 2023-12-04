@@ -1,0 +1,6 @@
+@testApiVue_HostAddress = http://localhost:5004
+
+GET {{testApiVue_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

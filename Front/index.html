@@ -1,0 +1,57 @@
+<div id="app">
+    <h2>ToDo App</h2>
+    <input id="newNotes" />&nbsp;
+    <button @click="addNewNotes()">Add Notes</button>
+    <p v-for="note in notes">
+        <b>- {{note.Description}}</b>&nbsp;
+        <button @click="deleteNote(note.Key)">Done</button>
+    </p>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"
+    integrity="sha512-b94Z6431JyXY14iSXwgzeZurHHRNkLt9d6bAHt7BZT38eqV+GyngIi/tVye4jBKPYQ2lBdRs0glww4fmpuLRwA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script type="module">
+    import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+    const API_URL = "http://localhost:5004/"
+    createApp({
+        data() {
+            return {
+                title: "ToDo App",
+                notes: []
+            }
+        },
+        methods: {
+            async refreshData() {
+                axios.get(API_URL + "GetNotes").then(
+                    (response) => {
+                        this.notes = response.data
+                    }
+                )
+            },
+            async addNewNotes() {
+                var newNotesValue = document.getElementById("newNotes").value;
+                const formData = new FormData();
+                formData.append("newNotes", newNotesValue);
+
+                axios.post(API_URL + "AddNotes", formData).then(
+                    (response) => {
+                        this.refreshData();
+                        alert(`A tarefa ${response.data.Description} foi incluída`);
+                    }
+                )
+            },
+            async deleteNote(id) {
+
+                axios.delete(API_URL + "DeleteNotes?key=" + id).then(
+                    (response) => {
+                        this.refreshData();
+                        alert("Tarefa concluída");
+                    }
+                )
+            }
+        }, mounted: function () {
+            this.refreshData();
+        }
+    }).mount('#app')
+</script>
